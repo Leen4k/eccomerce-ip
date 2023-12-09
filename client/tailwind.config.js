@@ -8,6 +8,7 @@
         colors: {
           primary: "#470CED",
           secondary: "#E2D8FF",
+          
         }
        },
      },
