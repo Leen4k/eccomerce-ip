@@ -1,11 +1,22 @@
 <script setup>
-    import Button from './components/Button.vue';
+    // import Button from './components/Button.vue';
     import { useRoute } from 'vue-router';
+    import ProductCard from './components/ProductCard.vue'
     const route = useRoute();
     console.log(route.path);
+
+    
 </script>
 
 <template>
+    <ProductCard 
+    Image='./src/assets/facebook.png' 
+    title="Hello" 
+    subTitle="Your step with powerful" 
+    price="$160" 
+    addButton="Add"
+    >
+    </ProductCard>
     <section>
         <nav v-if="route.path !== '/login'" class="flex justify-between">
             <span>Logo</span>
@@ -18,3 +29,17 @@
     </section>
 </template>
 
+<script>
+export default {
+        name: 'App',
+        ProductCard : [
+            {
+                image: "hi",
+                title: "Hello from ousa",
+                subTitle: 'ousa again',
+                price: "$160",
+                addButton: "add",   
+            },
+    ],
+    }
+</script>
