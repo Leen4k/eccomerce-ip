@@ -40,10 +40,10 @@
             </ProductCard>
             
         </div>
-        <div class="title" style="background-color: #470CED; color: white; font-size: 32px; height: 48px; display: flex; align-items: center; justify-content: center;">
+        <div class="title" style="background-color: #470CED; color: white; font-size: 32px; height: 48px; display: flex; align-items: center; justify-content: center; margin-top: 40px;">
             {{ title2 }}
         </div>
-        <div class="products" style=" align-items: center; justify-content: center;">
+        <div class="products" style=" align-items: center; justify-content: center; margin-top: 40px;">
             <ProductCard
             image='../src/assets/Untitled design (4) 1.png' 
             title="Hello" 
