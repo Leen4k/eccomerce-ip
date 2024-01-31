@@ -4,7 +4,7 @@
     import { useCartStore } from '../stores/cartStore';
     import cross from "../assets/cross 1.png"
     import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
-    const cartStore = useCartStore();
+
     const cartQuantity = ref(1);
     const cartDetails = ref(null);
     import { useUserStore } from '../stores/authStore';
@@ -14,11 +14,13 @@
     const store = useUserStore();
     const queryClient = useQueryClient();
     const notificationStore = useNotificationStore();
+    const cartStore = useCartStore();
 
     const fetchCart = async () => {
        try{
-        const {data} = await axios.get("/api/ShoppingCart/user/5");
+        const {data} = await axios.get(`/api/ShoppingCart/user/${store.userState.id}`);
         console.log(data);
+        cartStore.cartAmount = data.length;
         return data
        }catch(err){
         console.log(err);
@@ -63,9 +65,26 @@
         removeItemFromCartMutation.mutate(cartId);
     };
 
-  
+    const updateCartItemQuantity = async (cartId, newQuantity) => {
+        if(newQuantity == 0){
+            removeItemFromCart(cartId)
+        }
+        try {
+            // Make a PUT request to update the quantity of the item in the shopping cart
+            await axios.patch(`/api/ShoppingCart/${cartId}`, { quantity: newQuantity });
 
-    console.log(data.value);
+            // Invalidate the 'getCart' query to refetch the updated cart data
+            queryClient.invalidateQueries('getCart');
+
+            // Show a success notification
+            notificationStore.showSuccess(`Quantity updated for cart item ${cartId}`);
+        } catch (error) {
+            console.error('Failed to update cart item quantity:', error);
+            // Show an error notification
+            notificationStore.showError(`Failed to update quantity for cart item ${cartId}`);
+        }
+    };
+
 </script>
 
 <template>
@@ -82,12 +101,12 @@
                     <img class="object-cover flex-1" src="https://images.pexels.com/photos/12725054/pexels-photo-12725054.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="">
                 </div>
                 <div class="flex-1 flex flex-col gap-1 p-2">
-                    <p class="text-primary">Category {{ cart.product.id }}</p>
+                    <p class="text-primary">Category</p>
                     <p>{{ cart.product.name }}</p>
                     <span class="text-primary">price ${{ cart.product.price }}</span>
                     <p>Size:42</p>
                     <p>stock</p>
-                    <input v-model="cart.quantity" class="p-1 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]" type="number">
+                    <input v-model="cart.quantity" @input="updateCartItemQuantity(cart.id, $event.target.value)" class="p-1 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]" type="number">
                 </div>
             </article>
             </div>

@@ -20,11 +20,11 @@
     </section>
     <section v-else class="grid gap-8 md:grid-cols-2 md:place-items-center h-screen">
         <div class="col-span-1 h-[400px] aspect-square overflow-hidden">
-            <img :src="data.image" :alt="data.title+' img'">
+            <img v-for="(image,index) in data.images" :key="index" :src="`http://localhost:7000/api/images/01 align center (1).png`" :alt="image.name+' img'">
         </div>
         <div class="flex flex-col gap-4 col-span-1">
-            <p class="text-primary">{{ data.category }}</p>
-            <p class="text-2xl">{{ data.title }}</p>
+            <p class="text-primary">{{ data.category.categoryName }}</p>
+            <p class="text-2xl">{{ data.name }}</p>
             <span class="text-primary">$ {{ data.price }}</span>
             <div class="flex flex-col gap-4">
                 3 colors available
@@ -43,8 +43,8 @@
             <div v-if="isError">Error fetching data</div>
         </div>
     </section>
-    <Promotion promotionTitle="You may also like..." promotionDescription="" />
-    <Promotion promotionTitle="Other also bought" promotionDescription="" />
+    <!-- <Promotion promotionTitle="You may also like..." promotionDescription="" />
+    <Promotion promotionTitle="Other also bought" promotionDescription="" /> -->
 </template>
 
 <script setup>
@@ -54,32 +54,20 @@
     import { useRouter, useRoute } from 'vue-router';
     import { ref, onMounted } from 'vue';
     import Skeleton from 'primevue/skeleton';
-
-      // Import Swiper Vue.js components
-;
-      import { Swiper, SwiperSlide } from 'swiper/vue';
-
-  // Import Swiper styles
-  import 'swiper/css';
+import axios from 'axios';
   
 
-  const onSwiper = (swiper) => {
-    console.log(swiper);
-  };
-
-  const onSlideChange = () => {
-    console.log('slide change');
-  };
 
     const router = useRouter();
     const getRoute = useRoute();
     const {id} = getRoute.params;
+    const productId = id;
 
     const fetchSingleProduct = async () => {
     try {
-        const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-        const json = await response.json();
-        return json
+        const {data} = await axios.get(`api/products/${productId}`);
+        console.log(data);
+        return data
     } catch (error) {
         console.error('Error fetching the product:', error);
     }
@@ -98,28 +86,5 @@
 </script>
 
 <style scoped>
-.swiper-container {
-  background-color: #000;
-}
-.swiper-slide {
-  background-size: cover;
-  background-position: center;
-}
-.gallery-top {
-  height: 80%!important;
-  width: 100%;
-}
-.gallery-thumbs {
-  height: 20%!important;
-  box-sizing: border-box;
-  padding: 10px 0;
-}
-.gallery-thumbs .swiper-slide {
-  width: 25%;
-  height: 100%;
-  opacity: 0.4;
-}
-.gallery-thumbs .swiper-slide-active {
-  opacity: 1;
-}
+
 </style>

@@ -3,6 +3,7 @@ import { ref } from "vue"
 
 export const useCartStore = defineStore("cartStore",() => {
     const isOpen = ref(false);
+    const cartAmount = ref(0);
 
     const toggleOpen = () => {
         isOpen.value = !isOpen.value;
@@ -11,5 +12,6 @@ export const useCartStore = defineStore("cartStore",() => {
     return{
         isOpen,
         toggleOpen,
+        cartAmount
     }
 })

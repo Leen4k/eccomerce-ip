@@ -38,7 +38,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
     //     }
     // })
 
-        const addItemToCartMutation = useMutation({
+    const addItemToCartMutation = useMutation({
         mutationFn: (productId) => {
             return axios.post("/api/ShoppingCart", {
                 productId,
@@ -51,13 +51,58 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
             notificationStore.showSuccess("Successfully added to cart");
         },
         onError: () => {
-            notificationStore.showError("Failed to add to cart");
+            notificationStore.showError("Please login to add item to cart");
+        }
+    });
+
+    const updateItemInCartMutation = useMutation({
+        mutationFn: (data) => {
+            const {cartId, quantity} = data;
+            console.log(cartId);
+            return axios.patch(`api/ShoppingCart/${cartId}`, {
+                quantity
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries('getCart');
+            notificationStore.showSuccess("Successfully added to cart");
+        },
+        onError: (err) => {
+            console.log(err);
+            notificationStore.showError("Please login to add item to cart");
         }
     });
 
     const addItemToCart = (productId) => {
-        addItemToCartMutation.mutate(productId);
-    };
+    // Make a GET request to retrieve the user's shopping cart items
+    axios.get(`/api/ShoppingCart/user/${store.userState.id}`)
+        .then(({ data }) => {
+            // Check if the product with the given ID already exists in the cart
+            const existingProduct = data.find(item => item.product.id === productId);
+            console.log(existingProduct);
+
+            if (existingProduct) {
+                // Product already exists in the cart
+                // You can handle this case based on your application's logic
+                console.log('Product already exists in the cart');
+                notificationStore.showSuccess("product already exists");
+                // For example, you might want to update the quantity of the existing product
+                // You can call a separate function to update the quantity here
+                const dataToUpdate = {
+                    cartId: existingProduct.id,
+                    quantity: existingProduct.quantity += 1
+                }
+                updateItemInCartMutation.mutate(dataToUpdate);
+            } else {
+                // Product does not exist in the cart, proceed to add it
+                // You can call your mutation function here
+                addItemToCartMutation.mutate(productId);
+            }
+        })
+        .catch((error) => {
+            console.error('Error retrieving shopping cart:', error);
+        });
+};
 
 
 </script>

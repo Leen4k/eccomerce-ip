@@ -61,13 +61,6 @@
 
 
     const menu = ref();
-    const items = ref([
-        {
-            label: 'Logout',
-            icon: 'pi pi-file',
-            command: logout, // Adding command to trigger the logout function
-        },
-    ]);
 
     const showBrand = () => {
         alert("brand")
@@ -80,11 +73,26 @@
             command: showBrand, // Adding command to trigger the logout function
         },
     ]);
-    
 
-    const toggle = (event) => {
-        menu.value.toggle(event);
+    const items = ref([
+        {
+            label: 'Logout',
+            icon: 'pi pi-file',
+            command: logout, // Adding command to trigger the logout function
+        },
+    ]);
+
+    const brandMenu = ref();
+    const userMenu = ref();
+
+    const toggleBrand = (event) => {
+        brandMenu.value.toggle(event);
     };
+
+    const toggleUserMenu = (event) => {
+        userMenu.value.toggle(event);
+    };
+
 
 
 
@@ -101,19 +109,18 @@
             <div class="flex gap-2 items-center px-2">
                 <a href="/"><Button text="Home" :isPrimary="true" icon="hello"  /></a>
                 <a href="/product"> <Button text="Product" :isPrimary="true" icon="hello"  /></a>         
-                //filter category ousa
-                <span type="button" label="Toggle" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                <span type="button" label="Toggle" @click="toggleBrand" aria-haspopup="true" aria-controls="brand_tmenu">
                     <Button text="Brand" :isPrimary="true" icon="hello"  />
-                    <TieredMenu class="text-sm hover:transform-none text-primary" ref="menu" id="overlay_tmenu" :model="brands" popup />
+                    <TieredMenu class="text-sm hover:transform-none text-primary" ref="brandMenu" id="brand_tmenu" :model="brands" popup />
                 </span>
                 <!-- <Button text="Secondary..." :isPrimary="false" icon="hello"  /> -->
-                <span @click="cartStore.toggleOpen" class="w-8 aspect-square cursor-pointer transition-all hover:scale-90 relative"><img :src="cartLogo" alt=""><p class="bg-red-500 text-center aspect-square -right-2 -top-3 absolute px-2 rounded-full text-white">1</p></span>
+                <span @click="cartStore.toggleOpen" class="w-8 aspect-square cursor-pointer transition-all hover:scale-90 relative"><img :src="cartLogo" alt=""><p class="bg-red-500 text-center aspect-square -right-2 -top-3 absolute px-2 rounded-full text-white">{{ cartStore.cartAmount }}</p></span>
                 <span v-if="Object.keys(localUserInfo || {}).length !== 0">
-                    <div class="w-8 h-8 cursor-pointer" type="button" label="Toggle" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
+                    <div class="w-8 h-8 cursor-pointer" type="button" label="Toggle" @click="toggleUserMenu" aria-haspopup="true" aria-controls="user_tmenu">
                         <img v-if="localUserInfo?.photoURL" :src="localUserInfo.photoURL" class="rounded-full" alt="">
                         <span class="text-center flex items-center justify-center m-auto rounded-full bg-primary h-full text-white" v-else>{{ localUserInfo?.email?.charAt(0).toUpperCase()}}</span>
                     </div>
-                    <TieredMenu class="text-sm hover:transform-none text-primary" ref="menu" id="overlay_tmenu" :model="items" popup />
+                    <TieredMenu class="text-sm hover:transform-none text-primary" ref="userMenu" id="user_tmenu" :model="items" popup />
                 </span>
             </div>
         </nav>
