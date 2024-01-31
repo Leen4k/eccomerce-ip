@@ -24,11 +24,13 @@
       
 </script>
 <template>
-        <div class="flex flex-col m-auto text-center my-8">
+        <section>
+          <div class="flex flex-col m-auto text-center my-8">
             <h2 class="text-2xl font-bold">{{ promotionTitle }}</h2>
             <span class="text-primary">{{ promotionDescription }}</span>
         </div>
         <div  class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <ProductCard :key="index" v-for="(product,index) in data" :id="product.id" :title="product.title" :image="product.image" :category="product.category" :price="product.price" />
+            <ProductCard :key="product.id" v-for="(product) in data" :id="product.id" :name="product.name" :image="product.image" :category="product.category.categoryName" :price="product.price" />
         </div>
+        </section>
 </template>

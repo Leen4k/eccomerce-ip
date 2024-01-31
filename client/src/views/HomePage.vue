@@ -27,7 +27,7 @@
     // const fetchProduct = productStore.fetchProduct;
     const fetchProduct = async () => {
         try{
-            const {data} = await axios.get("https://fakestoreapi.com/products")
+            const {data} = await axios.get("api/products")
             console.log(data);
             return data;
         }catch(err){
@@ -73,6 +73,7 @@
         </div>
         <Promotion :data="data" promotionTitle="Trending Products" promotionDescription="Top sales this week" />
         <!-- <Promotion promotionTitle="Popular Products" promotionDescription="Top sales this week" /> -->
+        <h1 v-if="isError">error...</h1>
         <SkeletonLoading :isLoading="isLoading" />
 
     </section>  

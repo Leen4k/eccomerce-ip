@@ -101,6 +101,7 @@
             <div class="flex gap-2 items-center px-2">
                 <a href="/"><Button text="Home" :isPrimary="true" icon="hello"  /></a>
                 <a href="/product"> <Button text="Product" :isPrimary="true" icon="hello"  /></a>         
+                //filter category ousa
                 <span type="button" label="Toggle" @click="toggle" aria-haspopup="true" aria-controls="overlay_tmenu">
                     <Button text="Brand" :isPrimary="true" icon="hello"  />
                     <TieredMenu class="text-sm hover:transform-none text-primary" ref="menu" id="overlay_tmenu" :model="brands" popup />

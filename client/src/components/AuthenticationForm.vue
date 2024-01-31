@@ -247,7 +247,7 @@
         <span class="text-center text-primary hover:underline">{{ successMessage && successMessage }}</span> -->
     </form>
     <section v-if="router.path === '/reset-password'" class="h-screen css-selector">
-    <div class="h-screen fixed inset-0 overflow-y-hidden grid grid-cols-1 grid-flow-col place-items-center bg-gray-300 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-20">    
+    <div class="h-screen z-[10000] fixed inset-0 overflow-y-hidden grid grid-cols-1 grid-flow-col place-items-center bg-gray-300 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-20">    
         <article class="flex flex-col justify-center bg-secondary h-[500px] w-[400px] rounded-lg p-8">
             <div class="flex flex-col gap-4">
                 <img src="https://1000logos.net/wp-content/uploads/2021/05/Gmail-logo.png" alt="">

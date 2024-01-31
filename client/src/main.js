@@ -10,7 +10,8 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 import axios from 'axios'
 
 
-axios.defaults.baseURL = 'http://localhost:7000' || 'https://fakestoreapi.com';
+// axios.defaults.baseURL = 'http://localhost:7000' || 'https://fakestoreapi.com';
+axios.defaults.baseURL = 'http://localhost:7000';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
