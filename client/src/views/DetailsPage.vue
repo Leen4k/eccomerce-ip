@@ -20,7 +20,7 @@
     </section>
     <section v-else class="grid gap-8 md:grid-cols-2 md:place-items-center h-screen">
         <div class="col-span-1 h-[400px] aspect-square overflow-hidden">
-            <img v-for="(image,index) in data.images" :key="index" :src="`http://localhost:7000/api/images/01 align center (1).png`" :alt="image.name+' img'">
+            <img v-for="(image,index) in data.images" :key="index" :src="`http://localhost:7000/api/images/${image.name}`" :alt="image.name+' img'">
         </div>
         <div class="flex flex-col gap-4 col-span-1">
             <p class="text-primary">{{ data.category.categoryName }}</p>

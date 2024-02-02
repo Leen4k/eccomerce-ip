@@ -74,7 +74,7 @@
         <Promotion :data="data" promotionTitle="Trending Products" promotionDescription="Top sales this week" />
         <!-- <Promotion promotionTitle="Popular Products" promotionDescription="Top sales this week" /> -->
         <h1 v-if="isError">error...</h1>
-        <SkeletonLoading :isLoading="isLoading" />
+        <!-- <SkeletonLoading :isLoading="isLoading" /> -->
 
     </section>  
 </template>

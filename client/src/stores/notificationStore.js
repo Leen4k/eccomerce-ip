@@ -9,6 +9,7 @@ export const useNotificationStore = defineStore('NotificationStore', () => {
   const tokenState = ref(null);
   const loading = ref(true);
   const toast = useToast();
+  const searchTerm = ref("");
 
 
 
@@ -29,5 +30,6 @@ export const useNotificationStore = defineStore('NotificationStore', () => {
     setLoading,
     showSuccess,
     showError,
+    searchTerm
   };
 });

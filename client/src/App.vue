@@ -16,13 +16,41 @@
     import Cart from './components/Cart.vue';
     import cartLogo from "./assets/shopping-basket-19 1.png"
     import { useCartStore } from './stores/cartStore';
+    import { useQuery, useQueryClient } from '@tanstack/vue-query';    
+    import { useNotificationStore } from './stores/notificationStore';
 
     const router = useRouter();
     const store = useUserStore();
     const cartStore = useCartStore();
+    const notificationStore = useNotificationStore();
+    const queryClient = useQueryClient();
 
 
     const localUserInfo = ref(store.userState); // Create a local reactive variable
+    const searchTerm = ref("");
+    notificationStore.searchTerm = searchTerm.value;
+    console.log(notificationStore.searchTerm);
+    // Watch for changes in the search term
+    watch(searchTerm, (newValue, oldValue) => {
+        // Update the query string in the URL
+        router.push({ query: { search: newValue } });
+
+        // Log the updated query string
+        console.log(router.currentRoute.value.query);
+    });
+
+    const handleSearch = () => {
+        // Construct the search URL
+        const searchURL = `api/products/search?name=${encodeURIComponent(searchTerm.value)}`;
+        console.log(searchURL)
+        axios.get(searchURL).then(({data})=>{
+            store.showSuccess("you search for "+ searchTerm.value)
+            console.log(data);
+            queryClient.invalidateQueries('product');
+        }).catch((err)=>{
+            store.showError("error");
+        })
+    };
 
 
     const logout = () => {
@@ -30,17 +58,10 @@
         setTimeout(() => {
             store.setUser(null);
             store.setToken(null);
-            // const auth = getAuth();
-            // signOut(auth).then(() => {
-            // // Sign-out successful.
-            // console.log("logout successful");
-            // }).catch((error) => {
-            // // An error happened.
-            // console.log("failed to sign out");
-            // console.log(error);
-            // });
+            window.location.reload();
             store.loading = false; 
-        }, 2000);
+        }, 5000);
+        queryClient.invalidateQueries('getCart',{ refetchInactive: true });
         store.showSuccess("You have been logged out","successfully logged out");
     };
 
@@ -51,26 +72,58 @@
     onMounted(() => {
     if (!store.userState) {
       console.log("userState is null");
-
-    // Usage example to get the "token" cookie
-    const tokenCookie = store.getCookie('token');
-    store.fetchUserProfile(tokenCookie);
-
+      // Usage example to get the "token" cookie
+      const tokenCookie = store.getCookie('token');
+      store.fetchUserProfile(tokenCookie);
+      queryClient.invalidateQueries('getCart');
     }
   });
+  
 
 
     const menu = ref();
 
-    const showBrand = () => {
-        alert("brand")
+    const showBrand = (label) => {
+        console.log(label);
     }
+
+    // const getProductByCategory = () => {
+    //     axios.get(`/category/ca50b9f2-edb6-4b04-b477-6e5511db353c/products`).then(({data})=>{
+    //         console.log(data);
+    //     }).catch((err)=>{
+    //         console.log(err);
+    //     })
+    // }
+
+    const handleCategoryChange = (categoryId) => {
+        store.showSuccess(categoryId)
+        router.push({ query: { categoryId: categoryId } });
+    }
+
+
+    const getCategories = async () => {
+        try{
+            const {data} = await axios.get("/api/categories")
+            console.log(data);
+            let modifiedData = data.map(item => {
+                return { label: item.categoryName, categoryId: item.categoryId, command: () => handleCategoryChange(item.categoryId) };
+            });
+            return modifiedData
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+    const {data:categories, isError, isLoading} = useQuery({
+        queryKey: ['categoryKey'],
+        queryFn: getCategories
+    })
 
     const brands = ref([
         {
             label: 'Nike',
             icon: 'pi pi-file',
-            command: showBrand, // Adding command to trigger the logout function
+            command: showBrand("hi"), // Adding command to trigger the logout function
         },
     ]);
 
@@ -109,9 +162,10 @@
             <div class="flex gap-2 items-center px-2">
                 <a href="/"><Button text="Home" :isPrimary="true" icon="hello"  /></a>
                 <a href="/product"> <Button text="Product" :isPrimary="true" icon="hello"  /></a>         
+                <input type="text" class="shadow-md p-2" placeholder="search" v-model="searchTerm" @keyup.enter="handleSearch">
                 <span type="button" label="Toggle" @click="toggleBrand" aria-haspopup="true" aria-controls="brand_tmenu">
                     <Button text="Brand" :isPrimary="true" icon="hello"  />
-                    <TieredMenu class="text-sm hover:transform-none text-primary" ref="brandMenu" id="brand_tmenu" :model="brands" popup />
+                    <TieredMenu class="text-sm hover:transform-none text-primary" ref="brandMenu" id="brand_tmenu" :model="categories" popup />
                 </span>
                 <!-- <Button text="Secondary..." :isPrimary="false" icon="hello"  /> -->
                 <span @click="cartStore.toggleOpen" class="w-8 aspect-square cursor-pointer transition-all hover:scale-90 relative"><img :src="cartLogo" alt=""><p class="bg-red-500 text-center aspect-square -right-2 -top-3 absolute px-2 rounded-full text-white">{{ cartStore.cartAmount }}</p></span>

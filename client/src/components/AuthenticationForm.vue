@@ -11,6 +11,7 @@
     import { useRouter } from "vue-router";
     import Loading from "../components/Loading.vue";
     import axios from 'axios';
+    import { useQueryClient } from "@tanstack/vue-query";
 
     const router = useRoute();
     const navigate = useRouter();
@@ -25,6 +26,7 @@
     const resetCode = ref(null);
     const resetTokenUrl = ref(router.query.token);
     const showPassword = ref(true);
+    const queryClient = useQueryClient();
 
     const toggleShowPassword = () => {
         showPassword.value = !showPassword.value;
@@ -83,15 +85,6 @@
         store.loading = false;
     }
 
-                // createUserWithEmailAndPassword(auth, email.value, password.value)
-            // .then((userCredential) => {
-            //     // Signed up 
-            //     const user = userCredential.user;
-            //     console.log(user);
-            //     store.showSuccess("register successful",`Welcome ${email.value}`)
-            //     // ...
-            // })
-
     const signin = async (e) => {
         e.preventDefault();
         store.loading = true; // Set loading to true when logging out
@@ -99,27 +92,25 @@
         //     store.loading = false; 
         // }, 5000);
 
-        //firebase method:
-             // const data = await signInWithEmailAndPassword(auth, email.value, password.value);
-            // console.log(data);
-            // store.setUser(data.user);
-            // navigate.push("/");
-            // store.showSuccess("signin successful",`Welcome ${email.value}`)
-            // return data.user;
-
         try{
             const {data} = await axios.post("/api/v1/auth/signin",{email:email.value,password:password.value});
             console.log(data);
             store.setToken(data);
             const token = store.getCookie("token");
             store.fetchUserProfile(token);
+            setTimeout(() => {
+            window.location.reload();
+            store.loading = false; 
+            }, 5000);
             navigate.push("/");
-            store.showSuccess("signin successful",`Welcome ${data.token}`)
+            queryClient.invalidateQueries('getCart',{ refetchInactive: true });
+            store.showSuccess("signin successful",`Welcome ${data.email}`)
         }catch(error){
             console.log(error.response.data);
             store.showError("Error",!(error?.response?.data?.error) && error);
         }finally{
-            store.loading = false;
+            queryClient.invalidateQueries('getCart',{ refetchInactive: true });
+            store.loading = false;    
         }
     };
 

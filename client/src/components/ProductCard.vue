@@ -8,9 +8,10 @@
 import { useMutation, useQueryClient } from "@tanstack/vue-query";
 
     defineProps({
+        // data: Array,
         id: String,
         name: String,
-        image: String,
+        images: Object,
         price: Number,
         category: String
     })
@@ -84,8 +85,6 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
             if (existingProduct) {
                 // Product already exists in the cart
                 // You can handle this case based on your application's logic
-                console.log('Product already exists in the cart');
-                notificationStore.showSuccess("product already exists");
                 // For example, you might want to update the quantity of the existing product
                 // You can call a separate function to update the quantity here
                 const dataToUpdate = {
@@ -105,16 +104,17 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
 };
 
 
+
 </script>
 <template>
 
     <article class="flex flex-col gap-4 bg-secondary overflow-hidden rounded-xl h-[450px] p-4">
         <div class="flex w-full overflow-hidden">
             <img 
-                :src="image" 
-                alt="product image"
+                 v-for="(image,index) in images" :key="index" :src="`http://localhost:7000/api/images/${image.name}`" :alt="2+2"
                 class="object-center object-cover hover:scale-125 transition-all flex-1 h-[300px]"
             >
+            <!-- <p>{{ image.name }}</p> -->
         </div>
         <div class="flex flex-col justify-center h-[100px]">
             <a :href="`product/${id}`" class="font-bold hover:underline hover:font-bold">{{ name.slice(0,30) }} <span v-if="name.length>30">...</span></a>

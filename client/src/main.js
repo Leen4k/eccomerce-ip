@@ -8,6 +8,9 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import ToastService from 'primevue/toastservice';
 import { VueQueryPlugin } from '@tanstack/vue-query'
 import axios from 'axios'
+import VueAwesomePaginate from "vue-awesome-paginate";
+import "vue-awesome-paginate/dist/style.css";
+
 
 
 // axios.defaults.baseURL = 'http://localhost:7000' || 'https://fakestoreapi.com';
@@ -21,4 +24,5 @@ app.use(VueQueryPlugin);
 app.use(pinia);
 app.use(PrimeVue);
 app.use(ToastService);
+app.use(VueAwesomePaginate);
 app.mount('#app');

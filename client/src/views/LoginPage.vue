@@ -13,11 +13,13 @@
     import Toast from 'primevue/toast';
     import { useToast } from 'primevue/usetoast';
     const toast = useToast();
+ 
 
     const store = useUserStore();
     // const {loading} = store;
     const router = useRouter();
     console.log(store.userState);
+  
 
     if (Object.keys(store.userState || {}).length === 0) {
 
@@ -76,7 +78,7 @@
         <!-- <Loading v-if="store.loading" /> -->
         <div class="col-span-1 absolute inset-0 md:relative h-screen">
             <img :src="img1" class="object-cover absolute top-48 md:top-38 lg:top-0" alt="">
-            <img :src="logo" class="w-32 md:w-auto z-[2000] top-12 md:top-1/2 -translate-y-1/2 absolute" alt="">
+            <img :src="logo" class="w-32 md:w-auto z-[2000] md:z-0 top-12 md:top-1/2 -translate-y-1/2 absolute" alt="">
         </div>
         <div class="col-span-2 md:col-span-1 z-[1000] h-screen md:h-full justify-center items-center flex flex-col gap-0">
             <div>
