@@ -8,6 +8,7 @@
       import SkeletonLoading from './SkeletonLoading.vue';
       import { useRouter } from 'vue-router';
       import { useNotificationStore } from '../stores/notificationStore';
+      import ProgressBar from 'primevue/progressbar';
       defineProps({
         promotionTitle: String,
         promotionDescription: String,
@@ -16,31 +17,41 @@
 
       const router = useRouter();
       const notificationStore = useNotificationStore();
-      const currentPage = ref(1);
+      const currentPage = ref(parseInt(router.currentRoute.value.query.page) || 1); // Initialize with the value from the URL or default to 1
       const queryClient = useQueryClient();
       const loading = ref(false);
-      const searchTerm = ref(""); 
+      const searchTerm = ref(null); 
       const categoryId = ref(''); // Define categoryId as a ref
       
 
     const productFetcher = async (page) => {
         console.log(router.currentRoute.value.query.search);
-        const searchKeyWord = router.currentRoute.value.query.search;
+        searchTerm.value = router.currentRoute.value.query.search;
         console.log(router.currentRoute.value.query.categoryId);
         categoryId.value = router.currentRoute.value.query.categoryId;
 
         if (categoryId.value) {
           const response = await axios.get(`api/products/category/${categoryId.value}/products`);
           console.log(response.data);
+          await new Promise((resolve) => {
+            setTimeout(() => resolve(true), 1000);
+          });
           return response.data || [];
         }
-        else if (searchKeyWord) {
-            const response = await axios.get(`api/products/search?name=${searchKeyWord}`);
-            const { data } = response;
-            queryClient.invalidateQueries('product');
-            return data || [];
+        if (searchTerm.value) {
+            try{
+              const response = await axios.get(`api/products/search?name=${searchTerm.value}`);
+              const { data } = response;
+              // queryClient.invalidateQueries('product');
+              await new Promise((resolve) => {
+                setTimeout(() => resolve(true), 1000);
+              });
+              return data || [];
+            }catch(e){
+              console.log(e);
+            }
         } else {
-          const response = await axios.get(`/api/products/pagination?page=${currentPage.value-1}&size=1`)
+          const response = await axios.get(`/api/products/pagination?page=${currentPage.value-1}&size=2`)
           const {content:data} = response.data;
           console.log(data);
           await new Promise((resolve) => {
@@ -66,6 +77,7 @@
     onMounted(() => {
     const params = new URLSearchParams(window.location.search);
     const categoryIdParam = params.get('categoryId');
+    currentPage.value = parseInt(router.currentRoute.value.query.page) || 1;
     if (categoryIdParam) {
       categoryId.value = categoryIdParam;
       console.log(categoryId.value);
@@ -79,6 +91,12 @@
   watch(() => router.currentRoute.value.query.categoryId, () => {
     queryClient.invalidateQueries('product');
 });
+
+watch(currentPage, (newValue, oldValue) => {
+    // Update the route query parameter when currentPage changes
+    router.push({ query: { ...router.currentRoute.value.query, page: newValue } });
+    queryClient.invalidateQueries('product');
+  });
 
       // const productFetcher = async (page) => {
       //   console.log(router.currentRoute.value.query.search);
@@ -102,14 +120,22 @@
       //   return data || [];
       // }
 
-      watch(searchTerm, () => {
+    //   watch(searchTerm, () => {
+    //     // Update the route query parameter when searchTerm changes
+    //     router.push({ query: { search: searchTerm.value } });
+    // });
+    watch(searchTerm, (newValue, oldValue) => {
+    // Check if the new value of searchTerm is different from the query parameter
+    if (newValue !== router.currentRoute.value.query.search) {
         // Update the route query parameter when searchTerm changes
-        router.push({ query: { search: searchTerm.value } });
-    });
+        router.push({ query: { search: newValue } });
+        queryClient.invalidateQueries('product');
+    }
+});
 
       const {data, isLoading , isError, isFetching} = useQuery({
-        queryKey: ['product', currentPage, categoryId],
-        queryFn: () => productFetcher(currentPage),
+        queryKey: ['product', currentPage, categoryId, searchTerm],
+        queryFn: () => productFetcher(currentPage.value),
         keepPreviousData: true
       })
 
@@ -134,9 +160,17 @@
             <span class="text-primary">{{ promotionDescription }}</span>
         </div>
         <div  class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <ProductCard :key="product.id" v-for="(product) in data" :id="product.id" :name="product.name" :images="product.images" :category="product.category.categoryName" :price="product.price" />
+            <ProductCard 
+             :key="product.id" 
+              v-motion
+              :initial="{ opacity: 0, y: 20 }"
+              :enter="{ opacity: 1, y: 0, scale: 1 }"
+              :variants="{ custom: { scale: 2 } }"
+              :delay="200 * index" 
+             v-for="(product,index) in data" :id="product.id" :name="product.name" :images="product.images" :category="product.category.categoryName" :price="product.price" />
         </div>
         </section>
+        <div v-if="data?.length === 0" class="h-[70vh] text-center flex justify-center items-center">No Product Found...</div>
         <div class="flex justify-center">
           <div class="example-six mt-8">
        

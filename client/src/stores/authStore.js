@@ -70,6 +70,10 @@ export const useUserStore = defineStore('UserStore', () => {
     toast.add({ severity: 'error', summary: message, detail: detail, group: 'br', life: 10000 });
 };
 
+const showWarn = (message, detail) => {
+  toast.add({ severity: 'warning', summary: message, detail: detail, group: 'br', life: 10000 });
+};
+
 
   return {
     userState,
@@ -78,6 +82,7 @@ export const useUserStore = defineStore('UserStore', () => {
     setLoading,
     showSuccess,
     showError,
+    showWarn,
     tokenState,
     setToken,
     fetchUserProfile,

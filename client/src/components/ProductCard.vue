@@ -76,7 +76,8 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
 
     const addItemToCart = (productId) => {
     // Make a GET request to retrieve the user's shopping cart items
-    axios.get(`/api/ShoppingCart/user/${store.userState.id}`)
+    if(store?.userState?.id){
+        axios.get(`/api/ShoppingCart/user/${store.userState.id}`)
         .then(({ data }) => {
             // Check if the product with the given ID already exists in the cart
             const existingProduct = data.find(item => item.product.id === productId);
@@ -101,6 +102,9 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
         .catch((error) => {
             console.error('Error retrieving shopping cart:', error);
         });
+    }else{
+        store.showError("Please Login to go shopping")
+    }
 };
 
 

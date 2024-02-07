@@ -8,7 +8,7 @@
     import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
     import {auth} from "../firebase";
     import { useUserStore } from "../stores/authStore";
-    import { useRouter } from "vue-router";
+    import { useRoute, useRouter } from "vue-router";
     import Loading from "../components/Loading.vue";
     import Toast from 'primevue/toast';
     import { useToast } from 'primevue/usetoast';
@@ -18,6 +18,7 @@
     const store = useUserStore();
     // const {loading} = store;
     const router = useRouter();
+    const route = useRoute();
     console.log(store.userState);
   
 
@@ -85,7 +86,7 @@
                 <AuthenticationFormVue />
             </div>
             <div class="flex flex-col gap-2 p-4 justify-center items-center">
-                signup with:
+                <span class="text-primary"><a v-if="route.path == '/login'" href="/register" class="underline cursor-pointer">Register</a> <a v-if="route.path == '/register'" href="/login" class="underline cursor-pointer">Login</a> or <span class="text-black">signup with:</span></span> 
                 <div class="flex gap-2">
                     <a @click="googleSignIn" class="w-10 aspect-square" href=""><img :src="google" alt=""></a>
                     <a @click="facebookSignIn" class="w-10 aspect-square" href=""><img :src="facebook" alt=""></a>

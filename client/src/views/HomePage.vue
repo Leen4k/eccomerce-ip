@@ -54,16 +54,16 @@
 <template>
     <section class="overflow-hidden">
         <img :src="backgroundStyle" class="absolute left-0 -top-32 -z-[5]" alt="">
-        <div v-for="(promotion, index) in data" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-8 my-32 md:my-36">
-            <div :class="'rounded-lg relative ' + (checkIfIndexIsEven(index) ? 'order-0' : 'order-1')">
+        <div v-for="(promotion, index) in data" :key="index" class="grid grid-cols-1 md:grid-cols-2 gap-8 my-32 md:my-40">
+            <div v-motion-fade-visible :class="'rounded-lg relative ' + (checkIfIndexIsEven(index) ? 'order-0' : 'order-1')">
                 <img src="https://www.pngkey.com/png/detail/70-704531_jordan-shoe-png-air-jordan-court-purple.png" alt="">
-                <img v-if="checkIfIndexIsEven(index)" :src="backgroundStyle" class="absolute -right-20 -top-48 -z-[1000]" alt="">
-                <img v-if="!checkIfIndexIsEven(index)" :src="backgroundStyle" class="absolute -right-20 -top-48 -z-[1000]" alt="">
+                <!-- <img v-if="checkIfIndexIsEven(index)" :src="backgroundStyle" class="absolute -right-20 -top-48 -z-[1000]" alt="">
+                <img v-if="!checkIfIndexIsEven(index)" :src="backgroundStyle" class="absolute -right-20 -top-48 -z-[1000]" alt=""> -->
             </div>
-            <div :class="'flex flex-col justify-center gap-4 md:px-8 bg-white ' + (checkIfIndexIsEven(index) ? 'order-1' : 'order-0')">
-                <h1 class="text-6xl font-bold">{{ promotion.name }}</h1>
-                <p class="text-slate-500">{{ promotion.description }}</p>
-                <div>
+            <div  :class="'flex flex-col justify-center gap-4 md:px-8 ' + (checkIfIndexIsEven(index) ? 'order-1' : 'order-0')">
+                <h1 v-motion-slide-left class="text-6xl font-bold">{{ promotion.name }}</h1>
+                <p v-motion-slide-visible-right class="text-slate-500">{{ promotion.description }}</p>
+                <div v-motion-slide-visible-bottom>
                     <a :href="`/product/${promotion.product.id}`"><Button class="w-auto" text="Shop Now" :isPrimary="true" icon="hello"  /></a>
                 </div>
             </div>

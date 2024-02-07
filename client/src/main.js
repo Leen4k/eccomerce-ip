@@ -10,6 +10,9 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 import axios from 'axios'
 import VueAwesomePaginate from "vue-awesome-paginate";
 import "vue-awesome-paginate/dist/style.css";
+import { MotionPlugin } from '@vueuse/motion'
+import 'primeicons/primeicons.css'
+
 
 
 
@@ -25,4 +28,5 @@ app.use(pinia);
 app.use(PrimeVue);
 app.use(ToastService);
 app.use(VueAwesomePaginate);
+app.use(MotionPlugin)
 app.mount('#app');

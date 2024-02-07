@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card mt-20">
       <Carousel :value="products" :numVisible="3" :numScroll="1" :responsiveOptions="responsiveOptions" :autoplayInterval="3000">
         <template #item="slotProps">
           <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
@@ -11,10 +11,10 @@
               />
             </div>
             <div>
-              <div class="">
+              <!-- <div class="">
                 <h4 class="mb-1 text-4xl font-bold">{{ slotProps.data.name }}</h4>
                 <h6 class="mt-0 mb-3 text-2xl font-semibold">${{ slotProps.data.price }}</h6>
-              </div>
+              </div> -->
               <Tag :value="slotProps.data.inventoryStatus" :severity="getSeverity(slotProps.data.inventoryStatus)" />
               <div class="mt-5">
                 <Button icon="pi pi-search" rounded class="mr-2" />
