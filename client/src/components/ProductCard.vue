@@ -21,6 +21,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
     const initialQuantity = ref(1);
     const queryClient = useQueryClient();
 
+
     // const addItemToCart = (productId) => {
     //     axios.post("/api/ShoppingCart",{productId, userId:store.userState.id, quantity:initialQuantity.value}).then((response)=>{
     //         console.log(response);
@@ -45,7 +46,9 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
                 productId,
                 userId: store.userState.id,
                 quantity: initialQuantity.value
-            });
+            }, {headers:{
+              "Authorization": `Bearer ${store.tokenState.token}`
+          }});
         },
         onSuccess: () => {
             queryClient.invalidateQueries('getCart');
@@ -62,7 +65,9 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
             console.log(cartId);
             return axios.patch(`api/ShoppingCart/${cartId}`, {
                 quantity
-            });
+            }, {headers:{
+              "Authorization": `Bearer ${store.tokenState.token}`
+          }});
         },
         onSuccess: () => {
             queryClient.invalidateQueries('getCart');
@@ -77,7 +82,9 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
     const addItemToCart = (productId) => {
     // Make a GET request to retrieve the user's shopping cart items
     if(store?.userState?.id){
-        axios.get(`/api/ShoppingCart/user/${store.userState.id}`)
+        axios.get(`/api/ShoppingCart/user/${store.userState.id}`,{headers:{
+              "Authorization": `Bearer ${store.tokenState.token}`
+          }})
         .then(({ data }) => {
             // Check if the product with the given ID already exists in the cart
             const existingProduct = data.find(item => item.product.id === productId);
@@ -121,7 +128,7 @@ import { useMutation, useQueryClient } from "@tanstack/vue-query";
             <!-- <p>{{ image.name }}</p> -->
         </div>
         <div class="flex flex-col justify-center h-[100px]">
-            <a :href="`product/${id}`" class="font-bold hover:underline hover:font-bold">{{ name.slice(0,30) }} <span v-if="name.length>30">...</span></a>
+            <a :href="`/product-detail/${id}?pagination=off`" class="font-bold hover:underline hover:font-bold">{{ name.slice(0,30) }} <span v-if="name.length>30">...</span></a>
             <p class="text-primary">{{ category }}</p>
             <span class="flex justify-between">
                 <p><span>$ </span>{{ price }}</p>

@@ -1,9 +1,9 @@
 <template>
-      <section v-if="isLoading" class="grid gap-8 md:grid-cols-2 md:place-items-center h-screen">
-        <div class="col-span-1 h-[500px] aspect-square overflow-hidden">
+      <section v-if="isLoading" class="md:m-auto justify-center items-center flex flex-col gap-10 md:flex-row place-items-center h-screen">
+        <div class="col-span-1 w-full h-[350px] mt-10 md:h-[500px] p-0 md:p-10 overflow-hidden">
           <Skeleton width="100%" height="100%" class="h-full flex-1"></Skeleton>
         </div>
-        <div class="flex flex-col gap-8 col-span-1 w-full">
+        <div class="flex flex-col gap-2 md:gap-8 col-span-1 w-full">
             <Skeleton width="40%" class="mb-2"></Skeleton>
             <Skeleton width="100%" class="mb-2"></Skeleton>
             <Skeleton width="20%" class="mb-2"></Skeleton>
@@ -18,11 +18,15 @@
             </div>
         </div>
     </section>
-    <section v-else class="grid gap-8 md:grid-cols-2 md:place-items-center h-screen">
-        <div class="col-span-1 h-[400px] aspect-square overflow-hidden">
-            <img v-for="(image,index) in data.images" :key="index" :src="`http://localhost:7000/api/images/${image.name}`" :alt="image.name+' img'">
+    <section  v-motion
+              :initial="{ opacity: 0, y: 50 }"
+              :enter="{ opacity: 1, y: 0, scale: 1 }"
+              :variants="{ custom: { scale: 2 } }"
+              :delay="300"  v-else class="md:m-auto justify-center items-center flex flex-col gap-10 md:flex-row h-screen">
+        <div class="flex-1 w-full md:basis-1/2 h-[250px] mt-32 md:mt-0 md:h-[400px] aspect-square overflow-hidden">
+            <img v-for="(image,index) in data.images" class="w-full h-full object-contain" :key="index" :src="`http://localhost:7000/api/images/${image.name}`" :alt="image.name+' img'">
         </div>
-        <div class="flex flex-col gap-4 col-span-1">
+        <div class="flex flex-col gap-4 flex-1 w-full md:basis-1/2 md:pl-32">
             <p class="text-primary">{{ data.category.categoryName }}</p>
             <p class="text-2xl">{{ data.name }}</p>
             <span class="text-primary">$ {{ data.price }}</span>
@@ -39,10 +43,10 @@
             <div>
               <Button text="Add To Cart" :isPrimary="true" icon="hello"  />
             </div>
-            <div v-if="isLoading">Loading...</div>
-            <div v-if="isError">Error fetching data</div>
         </div>
     </section>
+    <Promotion :data="data" promotionTitle="You may also like" promotionDescription="" />
+    <Promotion :data="data" promotionTitle="Other also bought" promotionDescription="" />
     <!-- <Promotion promotionTitle="You may also like..." promotionDescription="" />
     <Promotion promotionTitle="Other also bought" promotionDescription="" /> -->
 </template>
@@ -67,6 +71,9 @@ import axios from 'axios';
     try {
         const {data} = await axios.get(`api/products/${productId}`);
         console.log(data);
+        await new Promise((resolve) => {
+          setTimeout(() => resolve(true), 1000);
+          });
         return data
     } catch (error) {
         console.error('Error fetching the product:', error);

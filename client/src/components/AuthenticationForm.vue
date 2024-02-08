@@ -43,6 +43,7 @@
         // Basic validation
         if (!emailValue || !passwordValue || !confirmPasswordValue || !userName.value) {
             store.showError("Error", "All fields are required.");
+            store.loading = false;
             return;
         }
 
@@ -50,18 +51,21 @@
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(emailValue)) {
             store.showError("Error", "Invalid email address.");
+            store.loading = false;
             return;
         }
 
         // Additional validation for the password length
         if (passwordValue.length < 6) {
             store.showError("Error", "Password must be at least 6 characters long.");
+            store.loading = false;
             return;
         }
 
         // Check if password and confirm password match
         if (passwordValue !== confirmPasswordValue) {
             store.showError("Error", "Passwords do not match.");
+            store.loading = false;
             return;
         }
 
@@ -76,13 +80,16 @@
         })
         .then(() => {
             store.showSuccess("Registration successful", `Welcome ${emailValue}`);
+            navigate.push("/login")
         })
         .catch((error) => {
             console.log(error);
             errorMessage.value = error.code;
             store.showError("Error", error.code);
+        }).finally(()=>{
+            store.loading = false;
         });
-        store.loading = false;
+       
     }
 
     const signin = async (e) => {
@@ -95,16 +102,15 @@
         try{
             const {data} = await axios.post("/api/v1/auth/signin",{email:email.value,password:password.value});
             console.log(data);
+            await new Promise((resolve) => {
+            setTimeout(() => resolve(true), 1000);
+            });
             store.setToken(data);
             const token = store.getCookie("token");
             store.fetchUserProfile(token);
-            setTimeout(() => {
-            window.location.reload();
-            store.loading = false; 
-            }, 5000);
             navigate.push("/");
             queryClient.invalidateQueries('getCart',{ refetchInactive: true });
-            store.showSuccess("signin successful",`Welcome ${data.email}`)
+            store.showSuccess("signin successful",`Welcome ${email.value}`)
         }catch(error){
             console.log(error.response.data);
             store.showError("Error",!(error?.response?.data?.error) && error);
@@ -157,7 +163,7 @@
         axios.post(`/api/v1/auth/reset-password/confirm?token=${token}&newPassword=${newPassword.value}`).then((res)=>{
             console.log(res);
             navigate.push("/login")
-            store.showSuccess("Success",res)
+            store.showSuccess("Success","successfully reset password")
         }).catch((err)=>{
             console.log(err);
             store.showError("Error", err);

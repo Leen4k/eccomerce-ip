@@ -15,7 +15,7 @@ const routes = [
   { path: '/forget-password/confirm', component: LoginPage },
   { path: '/reset-password', component: LoginPage },
   { path: '/product', component: ProductPage},
-  { path: '/product/:id', component: DetailsPage},
+  { path: '/product-detail/:id', component: DetailsPage},
   //in case the user navigates to the path that does not exist...
   { path: "/:catchAll(.*)", component: () => import('../views/NotFound.vue')},
 ]

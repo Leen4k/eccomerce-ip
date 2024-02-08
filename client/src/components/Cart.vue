@@ -18,7 +18,9 @@
 
     const fetchCart = async () => {
        try{
-        const {data} = await axios.get(`/api/ShoppingCart/user/${store.userState.id}`);
+        const {data} = await axios.get(`/api/ShoppingCart/user/${store.userState.id}`,{headers:{
+              "Authorization": `Bearer ${store.tokenState.token}`
+          }});
         console.log(data);
         cartStore.cartAmount = data.length;
         return data
@@ -50,7 +52,9 @@
 
     const removeItemFromCartMutation = useMutation({
         mutationFn: (cartId) => {
-            return axios.delete(`api/ShoppingCart/${cartId}`);
+            return axios.delete(`api/ShoppingCart/${cartId}`,{headers:{
+              "Authorization": `Bearer ${store.tokenState.token}`
+          }});
         },
         onSuccess: () => {
             queryClient.invalidateQueries('getCart');
@@ -71,7 +75,9 @@
         }
         try {
             // Make a PUT request to update the quantity of the item in the shopping cart
-            await axios.patch(`/api/ShoppingCart/${cartId}`, { quantity: newQuantity });
+            await axios.patch(`/api/ShoppingCart/${cartId}`, { quantity: newQuantity },{headers:{
+              "Authorization": `Bearer ${store.tokenState.token}`
+          }});
 
             // Invalidate the 'getCart' query to refetch the updated cart data
             queryClient.invalidateQueries('getCart');

@@ -130,8 +130,8 @@ const selectedPerson = ref(people[0])
     //     })
     // }
 
-    const handleCategoryChange = (categoryId) => {
-        store.showSuccess(categoryId)
+    const handleCategoryChange = (categoryId, categoryName) => {
+        store.showSuccess("filtering product for category " + categoryName)
         router.push({ query: { categoryId: categoryId } });
     }
 
@@ -141,9 +141,9 @@ const selectedPerson = ref(people[0])
             const {data} = await axios.get("/api/categories")
             console.log(data);
             let modifiedData = data.map(item => {
-                return { label: item.categoryName, categoryId: item.categoryId, command: () => handleCategoryChange(item.categoryId) };
+                return { label: item.categoryName, categoryId: item.categoryId, command: () => handleCategoryChange(item.categoryId, item.categoryName) };
             });
-            modifiedData = [{label: "All", categoryId: "All", command: () => {router.push("/");queryClient.invalidateQueries('product')}},...modifiedData]
+            modifiedData = [{label: "All", categoryId: "All", command: () => {router.push("/product?page=1");queryClient.invalidateQueries('product')}},...modifiedData]
             return modifiedData
         }catch(err){
             console.log(err);
@@ -193,7 +193,7 @@ const selectedPerson = ref(people[0])
 
 <template>
 
-    <ProgressBar v-if="store.loading || productIsLoading" mode="indeterminate" class="top-0 z-[1000] bg-secondary text-secondary sticky" style="height: 6px; background: #470CED!important; border-radius: 0;"></ProgressBar>
+    <ProgressBar v-if="store.loading" mode="indeterminate" class="top-0 z-[1000] bg-secondary text-secondary sticky" style="height: 6px; background: #470CED!important; border-radius: 0;"></ProgressBar>
 
     <section :class="route.path != '/login' && route.path != '/register' && route.path != '/forget-password' && route.path != '/forget-password/confirm' && route.path != '/reset-password' ? 'px-8' : ''">
 
@@ -207,14 +207,14 @@ const selectedPerson = ref(people[0])
             <div class="flex gap-2 items-center px-2">
                 <div class="flex gap-6 mx-2">
                     <a href="/" class="md:hidden flex items-center justify-center"><i :class="route.path === '/'?'pi pi-home scale-[1.7] rounded-full p-1 text-white bg-primary':'pi pi-home scale-[2] text-primary'" ></i></a>
-                    <a href="/product?page=1" class="md:hidden flex items-center justify-center"><i :class="route.path === '/product'?'pi pi-shopping-bag scale-[1.7] rounded-full p-1 text-white bg-primary':'pi pi-shopping-bag scale-[1.7] text-primary'" ></i></a>
+                    <a href="/product?page=1" class="md:hidden flex items-center justify-center"><i :class="route.path === '/product' || route.path.includes('/product-detail')?'pi pi-shopping-bag scale-[1.7] rounded-full p-1 text-white bg-primary':'pi pi-shopping-bag scale-[1.7] text-primary'" ></i></a>
                     <span class="md:hidden flex items-center justify-center" type="button" label="Toggle" @click="toggleBrand" aria-haspopup="true" aria-controls="brand_tmenu">
                         <p @click="setPrimary" class="md:hidden flex items-center justify-center"><i :class="primaryBrand?'pi pi-verified scale-[1.7] rounded-full p-1 text-white bg-primary':'pi pi-verified scale-[1.7] text-primary'" ></i></p>
                         <TieredMenu class="text-sm md:hidden hover:transform-none text-primary" ref="brandMenu" id="brand_tmenu" :model="categories" popup />
                 </span>
                 </div>
                 <a class="hidden md:block" href="/"><Button text="Home" :isPrimary="route.path === '/'" icon="hello"  /></a>
-                <a class="hidden md:block" href="/product?page=1"> <Button text="Product" :isPrimary="route.path === `/product`" icon="hello"  /></a>         
+                <a class="hidden md:block" href="/product?page=1"> <Button text="Product" :isPrimary="route.path === `/product` || route.path.includes('/product-detail')" icon="hello"  /></a>         
                 <span class="flex relative">
                     <input type="text" class="before:ease hover:bg-opacity-70 relative px-8 py-2 rounded-full overflow-hidden border border-primary text-primary shadow-2xl transition-all before:absolute before:right-0 before:top-0 before:h-12 before:w-6 before:translate-x-12 before:rotate-6 before:bg-primary before:opacity-10 before:duration-700 hover:shadow-secondary hover:before:-translate-x-40" placeholder="search" v-model="searchTerm" @keyup.enter="handleSearch">
                     <img :src="search" class="absolute right-3 top-[8px] w-6" alt="search icon">

@@ -6,7 +6,7 @@
       import {ref, watch, onMounted} from "vue";
       import axios from 'axios';
       import SkeletonLoading from './SkeletonLoading.vue';
-      import { useRouter } from 'vue-router';
+      import { useRoute, useRouter } from 'vue-router';
       import { useNotificationStore } from '../stores/notificationStore';
       import ProgressBar from 'primevue/progressbar';
       defineProps({
@@ -16,8 +16,9 @@
       })
 
       const router = useRouter();
+      const route = useRoute();
       const notificationStore = useNotificationStore();
-      const currentPage = ref(parseInt(router.currentRoute.value.query.page) || 1); // Initialize with the value from the URL or default to 1
+      const currentPage = ref(router.currentRoute.value.query.page || 1); // Initialize with the value from the URL or default to 1
       const queryClient = useQueryClient();
       const loading = ref(false);
       const searchTerm = ref(null); 
@@ -133,6 +134,8 @@ watch(currentPage, (newValue, oldValue) => {
     }
 });
 
+console.log(route);
+
       const {data, isLoading , isError, isFetching} = useQuery({
         queryKey: ['product', currentPage, categoryId, searchTerm],
         queryFn: () => productFetcher(currentPage.value),
@@ -149,17 +152,18 @@ watch(currentPage, (newValue, oldValue) => {
         currentPage.value = Math.max(currentPage.value, 1)
       }
 
+      console.log(router.currentRoute.value.query.pagination);
 
       
 </script>
 <template>
      <SkeletonLoading :isLoading="isLoading" />
         <section v-if="!isLoading">
-          <div class="flex flex-col m-auto text-center my-8">
+          <div class="flex flex-col m-auto text-center my-8 mt-20">
             <h2 class="text-2xl font-bold">{{ promotionTitle }}</h2>
             <span class="text-primary">{{ promotionDescription }}</span>
         </div>
-        <div  class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div class="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <ProductCard 
              :key="product.id" 
               v-motion
@@ -172,8 +176,7 @@ watch(currentPage, (newValue, oldValue) => {
         </section>
         <div v-if="data?.length === 0" class="h-[70vh] text-center flex justify-center items-center">No Product Found...</div>
         <div class="flex justify-center">
-          <div class="example-six mt-8">
-       
+          <div v-if="route.path !== '/' && router.currentRoute.value.query.pagination != 'off'" class="example-six mt-8">
             <vue-awesome-paginate
               :total-items="100"
               v-model="currentPage"

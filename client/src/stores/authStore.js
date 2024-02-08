@@ -43,7 +43,6 @@ export const useUserStore = defineStore('UserStore', () => {
       }).then((res)=>{
           console.log(res);
           setUser(res.data)
-          showSuccess(res.data.username);
       }).catch((err)=>{
           console.log(err);
       })
